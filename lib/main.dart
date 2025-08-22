@@ -4,6 +4,11 @@ import 'package:chatify_app/services/navigation_service.dart';
 import 'package:chatify_app/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:provider/provider.dart';
+
+import 'pages/home_page.dart';
+import 'pages/register_page.dart';
+import 'providers/authentication_provider.dart';
 
 void main() {
   runApp(
@@ -22,18 +27,29 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Chatify',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColors.scaffoldBackground,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: AppColors.bottomNavigationBar,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthenticationProvider>(
+          create: (_) => AuthenticationProvider(),
         ),
+      ],
+      child: MaterialApp(
+        title: 'Chatify',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          scaffoldBackgroundColor: AppColors.scaffoldBackground,
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            backgroundColor: AppColors.bottomNavigationBar,
+          ),
+        ),
+        navigatorKey: NavigationService.navigatorKey,
+        initialRoute: 'login',
+        routes: {
+          'login': (context) => LoginPage(),
+          'register': (context) => RegisterPage(),
+          'home': (context) => HomePage(),
+        },
       ),
-      navigatorKey: NavigationService.navigatorKey,
-      initialRoute: 'login',
-      routes: {'login': (context) => LoginPage()},
     );
   }
 }

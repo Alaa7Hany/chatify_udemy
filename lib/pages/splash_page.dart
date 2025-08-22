@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../firebase_options.dart';
 import '../services/cloud_storage_service.dart';
 import '../services/database_service.dart';
 import '../utils/app_colors.dart';
@@ -55,7 +56,9 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<void> _setup() async {
     WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     _registerServices();
   }
 

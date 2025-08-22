@@ -1,6 +1,10 @@
+import 'package:chatify_app/providers/authentication_provider.dart';
+import 'package:chatify_app/services/navigation_service.dart';
 import 'package:chatify_app/widgets/custom_input_field.dart';
 import 'package:chatify_app/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,10 +22,16 @@ class _LoginPageState extends State<LoginPage> {
   String? _email;
   String? _password;
 
+  late AuthenticationProvider _auth;
+  late NavigationService _navigation;
+
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+
+    _auth = Provider.of<AuthenticationProvider>(context);
+    _navigation = GetIt.instance.get<NavigationService>();
 
     return _buildUI();
   }
@@ -35,19 +45,21 @@ class _LoginPageState extends State<LoginPage> {
         ),
         height: _deviceHeight * 0.98,
         width: _deviceWidth * 0.97,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _pageTitle(),
-            SizedBox(height: _deviceHeight * 0.04),
-            _loginForm(),
-            SizedBox(height: _deviceHeight * 0.05),
-            _loginButton(),
-            SizedBox(height: _deviceHeight * 0.02),
-            _registerAccountLink(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _pageTitle(),
+              SizedBox(height: _deviceHeight * 0.04),
+              _loginForm(),
+              SizedBox(height: _deviceHeight * 0.05),
+              _loginButton(),
+              SizedBox(height: _deviceHeight * 0.02),
+              _registerAccountLink(),
+            ],
+          ),
         ),
       ),
     );
@@ -69,12 +81,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginForm() {
     return Container(
-      height: _deviceHeight * 0.2,
+      height: _deviceHeight * 0.3,
       child: Form(
         key: _loginFormKey,
         child: Column(
           mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CustomTextFormField(
@@ -110,13 +122,20 @@ class _LoginPageState extends State<LoginPage> {
       name: "Login",
       height: _deviceHeight * 0.08,
       width: _deviceWidth * 0.65,
-      onPressed: () {},
+      onPressed: () {
+        if (_loginFormKey.currentState!.validate()) {
+          _loginFormKey.currentState!.save();
+          _auth.loginWithEmailAndPassword(_email!, _password!);
+        }
+      },
     );
   }
 
   Widget _registerAccountLink() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        _navigation.navigateToRoute('register');
+      },
       child: Container(
         child: Text(
           'Don\'t have an account?',
