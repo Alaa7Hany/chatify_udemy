@@ -38,4 +38,21 @@ class DatabaseService {
       MyLogger.red("Error creating user: $e");
     }
   }
+
+  Stream<QuerySnapshot> getUserChats(String uid) {
+    return _db
+        .collection(CHAT_COLLECTION)
+        .where('members', arrayContains: uid)
+        .snapshots();
+  }
+
+  Future<QuerySnapshot> getLastMessageInChat(String chatID) async {
+    return _db
+        .collection(CHAT_COLLECTION)
+        .doc(chatID)
+        .collection(MESSAGES_COLLECTION)
+        .orderBy('sent_time', descending: true)
+        .limit(1)
+        .get();
+  }
 }

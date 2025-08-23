@@ -1,31 +1,46 @@
-import 'package:chatify_app/providers/authentication_provider.dart';
-import 'package:chatify_app/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
+import 'chats_page.dart';
+import 'users_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<StatefulWidget> createState() {
+    return _HomePageState();
+  }
 }
 
 class _HomePageState extends State<HomePage> {
+  int _currentPage = 0;
+  final List<Widget> _pages = [ChatsPage(), UsersPage()];
+
   @override
   Widget build(BuildContext context) {
+    return _buildUI();
+  }
+
+  Widget _buildUI() {
     return Scaffold(
-      body: Center(
-        child: RoundedButton(
-          name: 'Logout',
-          height: 50,
-          width: 200,
-          onPressed: () {
-            Provider.of<AuthenticationProvider>(
-              context,
-              listen: false,
-            ).logout();
-          },
-        ),
+      body: _pages[_currentPage],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentPage,
+        onTap: (index) {
+          setState(() {
+            _currentPage = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            label: "Chats",
+            icon: Icon(Icons.chat_bubble_sharp),
+          ),
+          BottomNavigationBarItem(
+            label: "Users",
+            icon: Icon(Icons.supervised_user_circle_sharp),
+          ),
+        ],
       ),
     );
   }

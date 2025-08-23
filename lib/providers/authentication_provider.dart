@@ -24,7 +24,6 @@ class AuthenticationProvider extends ChangeNotifier {
         MyLogger.red("User is currently signed out.");
         _navigation.removeAndNavigateToRoute('login');
       } else {
-        MyLogger.yellow('ghdfkjghdslkfjdsalkdkmsa;ldmsf.smf.ds');
         _database.updateLastSeen(currentUser.uid);
         _database.getUser(currentUser.uid).then((snapshot) {
           Map<String, dynamic> userData =
