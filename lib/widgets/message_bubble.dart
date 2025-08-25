@@ -25,7 +25,7 @@ class TextMessageBubble extends StatelessWidget {
         ? [Color.fromRGBO(0, 136, 249, 1.0), Color.fromRGBO(0, 82, 218, 1.0)]
         : [Color.fromRGBO(51, 49, 68, 1.0), Color.fromRGBO(51, 49, 68, 1.0)];
     return Container(
-      height: height + (message.content.length / 20 * 12.0),
+      height: height + (message.content.length / 20 * 20.0),
       width: width,
       padding: EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(

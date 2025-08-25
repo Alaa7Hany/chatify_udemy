@@ -81,4 +81,24 @@ class DatabaseService {
   Future<void> updateChatData(String chatId, Map<String, dynamic> data) async {
     await _db.collection(CHAT_COLLECTION).doc(chatId).update(data);
   }
+
+  Future<QuerySnapshot> getUsers({String? name}) {
+    Query query = _db.collection(USER_COLLECTION);
+    if (name != null) {
+      query = query
+          .where("name", isGreaterThanOrEqualTo: name)
+          .where("name", isLessThanOrEqualTo: "${name}z");
+    }
+    return query.get();
+  }
+
+  Future<DocumentReference?> createChat(Map<String, dynamic> data) async {
+    try {
+      DocumentReference chat = await _db.collection(CHAT_COLLECTION).add(data);
+      return chat;
+    } catch (e) {
+      MyLogger.red("Error creating chat: $e");
+    }
+    return null;
+  }
 }

@@ -1,18 +1,14 @@
+import 'package:chatify_app/models/chat_user.dart';
+import 'package:chatify_app/providers/authentication_provider.dart';
+import 'package:chatify_app/providers/users_page_provider.dart';
+import 'package:chatify_app/widgets/custom_input_field.dart';
+import 'package:chatify_app/widgets/custom_list_view_tile.dart';
+import 'package:chatify_app/widgets/rounded_button.dart';
+import 'package:chatify_app/widgets/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:get_it/get_it.dart';
-
-import '../providers/authentication_provider.dart';
-
-import '../widgets/top_bar.dart';
-
-import '../widgets/rounded_button.dart';
-
-import '../models/chat_user.dart';
 
 class UsersPage extends StatefulWidget {
-  const UsersPage({super.key});
-
   @override
   State<StatefulWidget> createState() {
     return _UsersPageState();
@@ -24,7 +20,7 @@ class _UsersPageState extends State<UsersPage> {
   late double _deviceWidth;
 
   late AuthenticationProvider _auth;
-  // late UsersPageProvider _pageProvider;
+  late UsersPageProvider _pageProvider;
 
   final TextEditingController _searchFieldTextEditingController =
       TextEditingController();
@@ -34,21 +30,20 @@ class _UsersPageState extends State<UsersPage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _auth = Provider.of<AuthenticationProvider>(context);
-    // return MultiProvider(
-    //   providers: [
-    //     ChangeNotifierProvider<UsersPageProvider>(
-    //       create: (_) => UsersPageProvider(_auth),
-    //     ),
-    //   ],
-    //   child: _buildUI(),
-    // );
-    return _buildUI();
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UsersPageProvider>(
+          create: (_) => UsersPageProvider(_auth),
+        ),
+      ],
+      child: _buildUI(),
+    );
   }
 
   Widget _buildUI() {
     return Builder(
       builder: (BuildContext context) {
-        // _pageProvider = _context.watch<UsersPageProvider>();
+        _pageProvider = context.watch<UsersPageProvider>();
         return Container(
           padding: EdgeInsets.symmetric(
             horizontal: _deviceWidth * 0.03,
@@ -73,18 +68,18 @@ class _UsersPageState extends State<UsersPage> {
                   },
                 ),
               ),
-              // CustomTextField(
-              //   onEditingComplete: (_value) {
-              //     _pageProvider.getUsers(name: _value);
-              //     FocusScope.of(context).unfocus();
-              //   },
-              //   hintText: "Search...",
-              //   obscureText: false,
-              //   controller: _searchFieldTextEditingController,
-              //   icon: Icons.search,
-              // ),
-              // _usersList(),
-              // _createChatButton(),
+              CustomTextField(
+                onEditingComplete: (value) {
+                  _pageProvider.getUsers(name: value);
+                  FocusScope.of(context).unfocus();
+                },
+                hintText: "Search...",
+                obscureText: false,
+                controller: _searchFieldTextEditingController,
+                icon: Icons.search,
+              ),
+              _usersList(),
+              _createChatButton(),
             ],
           ),
         );
@@ -92,58 +87,58 @@ class _UsersPageState extends State<UsersPage> {
     );
   }
 
-  // Widget _usersList() {
-  //   List<ChatUser>? _users = _pageProvider.users;
-  //   return Expanded(
-  //     child: () {
-  //       if (_users != null) {
-  //         if (_users.length != 0) {
-  //           return ListView.builder(
-  //             itemCount: _users.length,
-  //             itemBuilder: (BuildContext _context, int _index) {
-  //               return CustomListViewTile(
-  //                 height: _deviceHeight * 0.10,
-  //                 title: _users[_index].name,
-  //                 subtitle: "Last Active: ${_users[_index].lastDayActive()}",
-  //                 imagePath: _users[_index].imageURL,
-  //                 isActive: _users[_index].wasRecentlyActive(),
-  //                 isSelected: _pageProvider.selectedUsers.contains(
-  //                   _users[_index],
-  //                 ),
-  //                 onTap: () {
-  //                   _pageProvider.updateSelectedUsers(_users[_index]);
-  //                 },
-  //               );
-  //             },
-  //           );
-  //         } else {
-  //           return Center(
-  //             child: Text(
-  //               "No Users Found.",
-  //               style: TextStyle(color: Colors.white),
-  //             ),
-  //           );
-  //         }
-  //       } else {
-  //         return Center(child: CircularProgressIndicator(color: Colors.white));
-  //       }
-  //     }(),
-  //   );
-  // }
+  Widget _usersList() {
+    List<ChatUser>? users = _pageProvider.users;
+    return Expanded(
+      child: () {
+        if (users != null) {
+          if (users.isNotEmpty) {
+            return ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (BuildContext context, int index) {
+                return CustomListViewTile(
+                  height: _deviceHeight * 0.10,
+                  title: users[index].name,
+                  subtitle: "Last Active: ${users[index].lastDayActive()}",
+                  imagePath: users[index].imageURL,
+                  isActive: users[index].wasRecentlyActive(),
+                  isSelected: _pageProvider.selectedUsers.contains(
+                    users[index],
+                  ),
+                  onTap: () {
+                    _pageProvider.updateSelectedUsers(users[index]);
+                  },
+                );
+              },
+            );
+          } else {
+            return Center(
+              child: Text(
+                "No Users Found.",
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
+        } else {
+          return Center(child: CircularProgressIndicator(color: Colors.white));
+        }
+      }(),
+    );
+  }
 
-  // Widget _createChatButton() {
-  //   return Visibility(
-  //     visible: _pageProvider.selectedUsers.isNotEmpty,
-  //     child: RoundedButton(
-  //       name: _pageProvider.selectedUsers.length == 1
-  //           ? "Chat With ${_pageProvider.selectedUsers.first.name}"
-  //           : "Create Group Chat",
-  //       height: _deviceHeight * 0.08,
-  //       width: _deviceWidth * 0.80,
-  //       onPressed: () {
-  //         _pageProvider.createChat();
-  //       },
-  //     ),
-  //   );
-  // }
+  Widget _createChatButton() {
+    return Visibility(
+      visible: _pageProvider.selectedUsers.isNotEmpty,
+      child: RoundedButton(
+        name: _pageProvider.selectedUsers.length == 1
+            ? "Chat With ${_pageProvider.selectedUsers.first.name}"
+            : "Create Group Chat",
+        height: _deviceHeight * 0.08,
+        width: _deviceWidth * 0.80,
+        onPressed: () {
+          _pageProvider.createChat();
+        },
+      ),
+    );
+  }
 }
