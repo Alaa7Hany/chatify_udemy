@@ -128,7 +128,7 @@ class _ChatsPageState extends State<ChatsPage> {
       isActive: isActive,
       isActivity: chat.activity,
       onTap: () {
-        // _navigation.navigateToPage(ChatPage(chat: chat));
+        _navigation.navigateToPage(ChatPage(chat: chat));
       },
     );
   }
